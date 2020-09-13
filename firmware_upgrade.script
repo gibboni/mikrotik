@@ -1,0 +1,21 @@
+# Upgrade Routerboard firmware
+# written by Gibboni
+# https://github.com/gibboni/mikrotik
+:local cf [/system routerboard get current-firmware];
+:local uf [/system routerboard get upgrade-firmware];
+:local luf [len $uf];
+:local lcf [len $cf];
+log info "UpgradeFirmware-script: Current: $cf"
+log info "UpgradeFirmware-script: Upgrade: $uf"
+# Sanity check in case of failed upgrade. Sometimes the version number may be empty.
+:if (($luf > 3) and ($lcf > 3)) do={
+ :if ($cf !=$uf) do={
+  log info "UpgradeFirmware-script: Upgade started"
+  /system routerboard upgrade
+  :delay 2s
+  log info "UpgradeFirmware-script: Rebooting..."
+  /system reboot
+ } else { 
+   log info "UpgradeFirmware-script: No routerboard firmware upgrade available"
+ }
+}
